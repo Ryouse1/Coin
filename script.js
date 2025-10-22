@@ -1,77 +1,115 @@
-let stack = [];
-let targets = [];
-
-document.getElementById('startBtn').onclick = () => {
-  document.getElementById('title-screen').style.display = 'none';
-  document.getElementById('game-screen').style.display = 'block';
-  setupGame();
-};
-
-function setupGame(){
-  const diff = document.getElementById('difficulty').value;
-  let n, maxNum, slotCount;
-
-  if(diff==='easy'){ n=2+Math.floor(Math.random()*2)*2; maxNum=3; slotCount=2; }
-  else if(diff==='normal'){ n=4+Math.floor(Math.random()*2)*2; maxNum=5; slotCount=3; }
-  else{ n=6+Math.floor(Math.random()*1)*2; maxNum=8; slotCount=4; }
-
-  stack = [];
-  for(let i=0;i<n;i++) stack.push(Math.floor(Math.random()*maxNum)+1);
-
-  targets = [];
-  for(let i=0;i<slotCount;i++){
-    targets.push(Math.floor(Math.random()*maxNum*2)+2);
-  }
-
-  render();
+/* 全体背景 */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #ffecd2, #fcb69f);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }
 
-function render(){
-  const coinsContainer = document.getElementById('coins');
-  coinsContainer.innerHTML='';
-  stack.forEach((num,i)=>{
-    const coin = document.createElement('div');
-    coin.className='coin';
-    coin.innerText=num;
-    coin.draggable=true;
-    coin.id='coin'+i;
-    coinsContainer.appendChild(coin);
-  });
-
-  const slotsContainer = document.getElementById('slots');
-  slotsContainer.innerHTML='';
-  targets.forEach((t,i)=>{
-    const slot = document.createElement('div');
-    slot.className='slot';
-    slot.dataset.target=t;
-    slot.innerHTML=`合計 ${t}`;
-    slotsContainer.appendChild(slot);
-
-    slot.ondragover = e => e.preventDefault();
-    slot.ondrop = e=>{
-      e.preventDefault();
-      const coinId = e.dataTransfer.getData('text');
-      const coin = document.getElementById(coinId);
-      slot.appendChild(coin);
-      checkSlots();
-    };
-  });
-
-  document.querySelectorAll('.coin').forEach(c=>{
-    c.ondragstart = e => e.dataTransfer.setData('text', e.target.id);
-  });
+/* タイトル画面 */
+#title-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
 }
 
-function checkSlots(){
-  let allCorrect = true;
-  document.querySelectorAll('.slot').forEach(slot=>{
-    const target = parseInt(slot.dataset.target);
-    const sum = Array.from(slot.children).reduce((a,v)=>{
-      return a + (v.className==='coin'?parseInt(v.innerText):0);
-    },0);
-    if(sum===target) slot.classList.add('correct');
-    else slot.classList.remove('correct');
-    if(sum!==target) allCorrect=false;
-  });
-  if(allCorrect) setTimeout(()=>alert('クリア！🎉'),100);
+h1 {
+  font-size: 48px;
+  color: #8B4513;
+  text-shadow: 3px 3px 6px #fff, 0 0 10px #fcb69f;
+  margin-bottom: 30px;
+}
+
+/* スタートボタン */
+#startBtn {
+  font-size: 24px;
+  padding: 15px 40px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(to bottom, #ffd700, #ffb700);
+  box-shadow: 0 5px #b38600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+#startBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px #b38600;
+}
+#startBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 3px #b38600;
+}
+
+/* 難易度セレクト */
+select {
+  font-size: 18px;
+  padding: 8px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 2px solid #aaa;
+}
+
+/* コイン */
+#coins {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  min-height: 80px;
+}
+
+.coin {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fffacd, #ffd700);
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 20px;
+  cursor: grab;
+  transition: transform 0.2s;
+}
+.coin:active { transform: scale(1.2); }
+
+/* 枠 */
+#slots {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 100px;
+  justify-content: center;
+}
+
+.slot {
+  width: 120px;
+  height: 100px;
+  border: 3px dashed #333;
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-weight: bold;
+  font-size: 16px;
+  background-color: rgba(255,255,255,0.7);
+  border-radius: 12px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+  transition: background-color 0.3s;
+}
+.slot.correct {
+  background-color: #90ee90;
+  border-color: #008000;
+}
+
+/* ゲーム画面全体 */
+#game-screen h2 {
+  color: #8B4513;
+  text-shadow: 1px 1px 3px #fff;
 }
