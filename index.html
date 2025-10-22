@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -8,6 +9,7 @@
 <body>
 
 <!-- タイトル画面 -->
+<!--
 <div id="title-screen">
   <h1>💰 コイン分けパズル 💰</h1>
   <label for="difficulty">難易度:</label>
@@ -21,7 +23,7 @@
 </div>
 
 <!-- ゲーム画面 -->
-<div id="game-screen" style="display:none">
+<!-- <div id="game-screen" style="display:none">
   <h2>コイン</h2>
   <div id="coins"></div>
 
@@ -30,8 +32,69 @@
 </div>
 
 <!-- 背景パーティクル -->
-<div id="particles"></div>
+<!-- <div id="particles"></div>
 
 <script src="script.js"></script>
+</body>
+</html> 
+<!-- 終わり -->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ドラッグテスト</title>
+<style>
+  #coins, #slots { display:flex; gap:10px; margin:20px; }
+  .coin {
+    width:60px; height:60px; background:gold; border-radius:50%;
+    display:flex; justify-content:center; align-items:center;
+    font-weight:bold; font-size:20px; cursor:grab;
+  }
+  .slot {
+    width:120px; height:100px; border:3px dashed #333;
+    display:flex; justify-content:center; align-items:center;
+  }
+</style>
+</head>
+<body>
+
+<h2>コイン</h2>
+<div id="coins"></div>
+<h2>枠</h2>
+<div id="slots"></div>
+
+<script>
+const coinsContainer = document.getElementById('coins');
+const slotsContainer = document.getElementById('slots');
+
+// コイン生成
+for(let i=0;i<5;i++){
+  const coin = document.createElement('div');
+  coin.className='coin';
+  coin.innerText = i+1;
+  coin.id = 'coin'+i;
+  coin.setAttribute('draggable','true');
+  coin.addEventListener('dragstart', e=>{
+    e.dataTransfer.setData('text/plain', e.target.id);
+  });
+  coinsContainer.appendChild(coin);
+}
+
+// 枠生成
+for(let i=0;i<3;i++){
+  const slot = document.createElement('div');
+  slot.className='slot';
+  slot.addEventListener('dragover', e=>e.preventDefault());
+  slot.addEventListener('drop', e=>{
+    e.preventDefault();
+    const coinId = e.dataTransfer.getData('text/plain');
+    const coin = document.getElementById(coinId);
+    slot.appendChild(coin);
+  });
+  slotsContainer.appendChild(slot);
+}
+</script>
+
 </body>
 </html>
