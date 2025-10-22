@@ -1,0 +1,13 @@
+#coins { display:flex; flex-wrap:wrap; margin-bottom:20px; }
+.coin {
+  width:60px; height:60px; border-radius:50%; background:gold;
+  margin:5px; display:flex; justify-content:center; align-items:center;
+  font-weight:bold; font-size:20px; cursor:pointer;
+}
+
+#slots { display:flex; flex-wrap:wrap; }
+.slot {
+  width:100px; height:80px; border:2px dashed #333; margin:5px;
+  display:flex; justify-content:center; align-items:center; flex-direction:column;
+  font-weight:bold;
+}
