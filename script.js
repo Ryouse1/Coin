@@ -1,6 +1,12 @@
 let stack = [];
 let targets = [];
 
+document.getElementById('startBtn').onclick = () => {
+  document.getElementById('title-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'block';
+  setupGame();
+};
+
 function setupGame(){
   const diff = document.getElementById('difficulty').value;
   let n, maxNum, slotCount;
@@ -9,20 +15,17 @@ function setupGame(){
   else if(diff==='normal'){ n=4+Math.floor(Math.random()*2)*2; maxNum=5; slotCount=3; }
   else{ n=6+Math.floor(Math.random()*1)*2; maxNum=8; slotCount=4; }
 
-  // コイン生成
   stack = [];
   for(let i=0;i<n;i++) stack.push(Math.floor(Math.random()*maxNum)+1);
 
-  // 枠生成（簡単にランダム合計）
   targets = [];
   for(let i=0;i<slotCount;i++){
-    targets.push(Math.floor(Math.random()*maxNum*2)+2); // 目標合計
+    targets.push(Math.floor(Math.random()*maxNum*2)+2);
   }
 
   render();
 }
 
-// 表示
 function render(){
   const coinsContainer = document.getElementById('coins');
   coinsContainer.innerHTML='';
@@ -35,7 +38,6 @@ function render(){
     coinsContainer.appendChild(coin);
   });
 
-  // 枠
   const slotsContainer = document.getElementById('slots');
   slotsContainer.innerHTML='';
   targets.forEach((t,i)=>{
@@ -55,13 +57,11 @@ function render(){
     };
   });
 
-  // ドラッグ開始
   document.querySelectorAll('.coin').forEach(c=>{
     c.ondragstart = e => e.dataTransfer.setData('text', e.target.id);
   });
 }
 
-// スロットチェック
 function checkSlots(){
   let allCorrect = true;
   document.querySelectorAll('.slot').forEach(slot=>{
@@ -69,10 +69,9 @@ function checkSlots(){
     const sum = Array.from(slot.children).reduce((a,v)=>{
       return a + (v.className==='coin'?parseInt(v.innerText):0);
     },0);
+    if(sum===target) slot.classList.add('correct');
+    else slot.classList.remove('correct');
     if(sum!==target) allCorrect=false;
   });
   if(allCorrect) setTimeout(()=>alert('クリア！🎉'),100);
 }
-
-// 初期ゲーム
-setupGame();
