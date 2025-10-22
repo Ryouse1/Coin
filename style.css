@@ -10,25 +10,25 @@ body {
 
 #particles {
   position: fixed; top:0; left:0; width:100%; height:100%;
-  pointer-events: none; z-index:0;
+  pointer-events: none; /* これでパーティクルがドラッグを邪魔しない */
+  z-index:0;
 }
 
 #title-screen { display:flex; flex-direction: column; align-items: center; margin-top: 80px; z-index:1; }
 #startBtn { font-size: 24px; padding: 15px 40px; border-radius: 12px; border:none; cursor:pointer; }
 
-#coins { display:flex; flex-wrap:wrap; margin-bottom:20px; min-height:80px; }
+#coins { display:flex; flex-wrap:wrap; margin-bottom:20px; min-height:80px; z-index:1; }
 .coin {
   width:60px; height:60px; border-radius:50%;
   background: radial-gradient(circle at 30% 30%, #fffacd, #ffd700);
   box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
   margin:5px; display:flex; justify-content:center; align-items:center;
   font-weight:bold; font-size:20px; cursor:grab;
-  transition: transform 0.3s;
-  z-index:1;
+  z-index:10;
 }
 .coin:active { transform: scale(1.2); }
 
-#slots { display:flex; flex-wrap:wrap; min-height:100px; justify-content:center; }
+#slots { display:flex; flex-wrap:wrap; min-height:100px; justify-content:center; z-index:1; }
 .slot {
   width:120px; height:100px; border:3px dashed #333; margin:10px;
   display:flex; justify-content:center; align-items:center; flex-direction:column;
