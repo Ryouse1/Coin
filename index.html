@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>コイン分けパズル</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>コイン分けパズル</h1>
+
+<label for="difficulty">難易度:</label>
+<select id="difficulty" onchange="setupGame()">
+  <option value="easy">易しい</option>
+  <option value="normal">普通</option>
+  <option value="hard">難しい</option>
+</select>
+
+<h2>コイン</h2>
+<div id="coins"></div>
+
+<h2>枠</h2>
+<div id="slots"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
