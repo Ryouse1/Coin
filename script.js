@@ -1,4 +1,4 @@
-let stack = [], targets = [];
+let stack=[], targets=[];
 
 document.addEventListener('DOMContentLoaded', () => {
   const startBtn = document.getElementById('startBtn');
@@ -13,12 +13,27 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupGame(){
   const diff = document.getElementById('difficulty').value;
   let n, maxNum, slotCount;
+
   if(diff==='easy'){ n=2+Math.floor(Math.random()*2)*2; maxNum=3; slotCount=2; }
   else if(diff==='normal'){ n=4+Math.floor(Math.random()*2)*2; maxNum=5; slotCount=3; }
   else{ n=6+Math.floor(Math.random()*1)*2; maxNum=8; slotCount=4; }
 
-  stack=[]; for(let i=0;i<n;i++) stack.push(Math.floor(Math.random()*maxNum)+1);
-  targets=[]; for(let i=0;i<slotCount;i++) targets.push(Math.floor(Math.random()*maxNum*2)+2);
+  // コイン生成
+  stack = [];
+  for(let i=0;i<n;i++) stack.push(Math.floor(Math.random()*maxNum)+1);
+
+  // 枠の合計をコイン合計からランダムに分ける
+  const total = stack.reduce((a,b)=>a+b,0);
+  targets = [];
+  let remaining = total;
+  for(let i=0;i<slotCount-1;i++){
+    const val = Math.floor(Math.random()*(remaining-(slotCount-i-1))) + 1;
+    targets.push(val);
+    remaining -= val;
+  }
+  targets.push(remaining);
+  targets.sort(()=>Math.random()-0.5); // シャッフル
+
   render();
 }
 
@@ -27,7 +42,11 @@ function render(){
   coinsContainer.innerHTML='';
   stack.forEach((num,i)=>{
     const coin=document.createElement('div');
-    coin.className='coin'; coin.innerText=num; coin.draggable=true; coin.id='coin'+i;
+    coin.className='coin'; coin.innerText=num; coin.id='coin'+i;
+    coin.setAttribute('draggable','true');
+    coin.addEventListener('dragstart', e=>{
+      e.dataTransfer.setData('text/plain', e.target.id);
+    });
     coinsContainer.appendChild(coin);
   });
 
@@ -36,19 +55,15 @@ function render(){
   targets.forEach((t,i)=>{
     const slot=document.createElement('div');
     slot.className='slot'; slot.dataset.target=t; slot.innerHTML=`合計 ${t}`;
-    slotsContainer.appendChild(slot);
-    slot.ondragover=e=>e.preventDefault();
-    slot.ondrop=e=>{
+    slot.addEventListener('dragover', e=>e.preventDefault());
+    slot.addEventListener('drop', e=>{
       e.preventDefault();
-      const coinId=e.dataTransfer.getData('text');
-      const coin=document.getElementById(coinId);
+      const coinId = e.dataTransfer.getData('text/plain');
+      const coin = document.getElementById(coinId);
       slot.appendChild(coin);
       checkSlots();
-    };
-  });
-
-  document.querySelectorAll('.coin').forEach(c=>{
-    c.ondragstart=e=>e.dataTransfer.setData('text', e.target.id);
+    });
+    slotsContainer.appendChild(slot);
   });
 }
 
