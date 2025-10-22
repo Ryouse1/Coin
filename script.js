@@ -1,15 +1,18 @@
-let stack=[], targets=[];
+let stack = [], targets = [];
 
-document.getElementById('startBtn').onclick = () => {
-  document.getElementById('title-screen').style.display='none';
-  document.getElementById('game-screen').style.display='block';
-  setupParticles(50);
-  setupGame();
-};
+document.addEventListener('DOMContentLoaded', () => {
+  const startBtn = document.getElementById('startBtn');
+  startBtn.addEventListener('click', () => {
+    document.getElementById('title-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'block';
+    setupParticles(50);
+    setupGame();
+  });
+});
 
 function setupGame(){
   const diff = document.getElementById('difficulty').value;
-  let n,maxNum,slotCount;
+  let n, maxNum, slotCount;
   if(diff==='easy'){ n=2+Math.floor(Math.random()*2)*2; maxNum=3; slotCount=2; }
   else if(diff==='normal'){ n=4+Math.floor(Math.random()*2)*2; maxNum=5; slotCount=3; }
   else{ n=6+Math.floor(Math.random()*1)*2; maxNum=8; slotCount=4; }
@@ -60,7 +63,6 @@ function checkSlots(){
   if(allCorrect) setTimeout(()=>alert('クリア！🎉'),100);
 }
 
-/* 背景パーティクル */
 function setupParticles(num){
   const container=document.getElementById('particles');
   for(let i=0;i<num;i++){
