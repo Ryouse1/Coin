@@ -15,7 +15,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 100px;
+  margin-top: 80px;
 }
 
 h1 {
@@ -52,6 +52,7 @@ select {
   margin-bottom: 20px;
   border-radius: 8px;
   border: 2px solid #aaa;
+  background: linear-gradient(to bottom, #fff, #ffe680);
 }
 
 /* コイン */
