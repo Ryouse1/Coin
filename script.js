@@ -1,10 +1,9 @@
 let stack=[], targets=[];
 
 document.addEventListener('DOMContentLoaded', () => {
-  const startBtn = document.getElementById('startBtn');
-  startBtn.addEventListener('click', () => {
-    document.getElementById('title-screen').style.display = 'none';
-    document.getElementById('game-screen').style.display = 'block';
+  document.getElementById('startBtn').addEventListener('click', ()=>{
+    document.getElementById('title-screen').style.display='none';
+    document.getElementById('game-screen').style.display='block';
     setupParticles(50);
     setupGame();
   });
@@ -12,27 +11,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function setupGame(){
   const diff = document.getElementById('difficulty').value;
-  let n, maxNum, slotCount;
+  let slotCount;
+  if(diff==='easy') slotCount = 2;
+  else if(diff==='normal') slotCount = 3;
+  else slotCount = 4;
 
-  if(diff==='easy'){ n=2+Math.floor(Math.random()*2)*2; maxNum=3; slotCount=2; }
-  else if(diff==='normal'){ n=4+Math.floor(Math.random()*2)*2; maxNum=5; slotCount=3; }
-  else{ n=6+Math.floor(Math.random()*1)*2; maxNum=8; slotCount=4; }
-
-  // コイン生成
-  stack = [];
-  for(let i=0;i<n;i++) stack.push(Math.floor(Math.random()*maxNum)+1);
-
-  // 枠の合計をコイン合計からランダムに分ける
-  const total = stack.reduce((a,b)=>a+b,0);
+  // まず答え（枠の合計）を生成
   targets = [];
-  let remaining = total;
+  for(let i=0;i<slotCount;i++){
+    targets.push(0); // 初期値0、後でコイン分配で決める
+  }
+
+  // コインの合計を決める
+  let totalCoins = 0;
+  const coinCount = slotCount*2 + Math.floor(Math.random()*3); // 適当にコイン数
+  stack = [];
+  for(let i=0;i<coinCount;i++){
+    const val = Math.floor(Math.random()*5)+1;
+    stack.push(val);
+    totalCoins += val;
+  }
+
+  // 枠ごとの正解をランダムに分ける
+  let remaining = totalCoins;
   for(let i=0;i<slotCount-1;i++){
-    const val = Math.floor(Math.random()*(remaining-(slotCount-i-1))) + 1;
-    targets.push(val);
+    const val = Math.floor(Math.random()*(remaining-(slotCount-i-1)))+1;
+    targets[i] = val;
     remaining -= val;
   }
-  targets.push(remaining);
-  targets.sort(()=>Math.random()-0.5); // シャッフル
+  targets[slotCount-1] = remaining;
+  // シャッフル
+  targets.sort(()=>Math.random()-0.5);
 
   render();
 }
@@ -42,7 +51,9 @@ function render(){
   coinsContainer.innerHTML='';
   stack.forEach((num,i)=>{
     const coin=document.createElement('div');
-    coin.className='coin'; coin.innerText=num; coin.id='coin'+i;
+    coin.className='coin';
+    coin.innerText=num;
+    coin.id='coin'+i;
     coin.setAttribute('draggable','true');
     coin.addEventListener('dragstart', e=>{
       e.dataTransfer.setData('text/plain', e.target.id);
@@ -54,15 +65,26 @@ function render(){
   slotsContainer.innerHTML='';
   targets.forEach((t,i)=>{
     const slot=document.createElement('div');
-    slot.className='slot'; slot.dataset.target=t; slot.innerHTML=`合計 ${t}`;
+    slot.className='slot';
+    slot.dataset.target=t;
+
     slot.addEventListener('dragover', e=>e.preventDefault());
+    slot.addEventListener('dragenter', e=>{
+      e.preventDefault();
+      slot.style.backgroundColor='rgba(173,216,230,0.5)';
+    });
+    slot.addEventListener('dragleave', e=>{
+      slot.style.backgroundColor='rgba(255,255,255,0.7)';
+    });
     slot.addEventListener('drop', e=>{
       e.preventDefault();
       const coinId = e.dataTransfer.getData('text/plain');
       const coin = document.getElementById(coinId);
       slot.appendChild(coin);
+      slot.style.backgroundColor='rgba(255,255,255,0.7)';
       checkSlots();
     });
+
     slotsContainer.appendChild(slot);
   });
 }
@@ -70,10 +92,9 @@ function render(){
 function checkSlots(){
   let allCorrect=true;
   document.querySelectorAll('.slot').forEach(slot=>{
-    const target=parseInt(slot.dataset.target);
-    const sum=Array.from(slot.children).reduce((a,v)=>a+(v.className==='coin'?parseInt(v.innerText):0),0);
-    if(sum===target) slot.classList.add('correct'); else slot.classList.remove('correct');
-    if(sum!==target) allCorrect=false;
+    const sum = Array.from(slot.children).reduce((a,v)=>a+(v.className==='coin'?parseInt(v.innerText):0),0);
+    if(sum===parseInt(slot.dataset.target)) slot.classList.add('correct');
+    else { slot.classList.remove('correct'); allCorrect=false; }
   });
   if(allCorrect) setTimeout(()=>alert('クリア！🎉'),100);
 }
