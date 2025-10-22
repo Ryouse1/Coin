@@ -102,8 +102,7 @@ function checkSlots() {
   }
 }
 
-// 浮遊パーティクル
-function setupParticles(num) {
+// 浮遊パーティクルfunction setupParticles(num) {
   const container = document.getElementById('particles');
   container.innerHTML = '';
 
@@ -111,18 +110,20 @@ function setupParticles(num) {
     const p = document.createElement('div');
     p.className = 'particle';
 
+    // ランダム初期位置
     const x0 = Math.random() * window.innerWidth;
     const y0 = Math.random() * window.innerHeight;
     p.style.left = x0 + 'px';
     p.style.top = y0 + 'px';
 
-    const dx = (Math.random() - 0.5) * 50; // 左右揺れ幅
-    const dy = (Math.random() - 0.5) * 50; // 上下揺れ幅
+    // ランダム揺れ幅
+    const dx = (Math.random() - 0.5) * 50; // 左右 ±25px
+    const dy = (Math.random() - 0.5) * 50; // 上下 ±25px
     p.style.setProperty('--x', dx + 'px');
     p.style.setProperty('--y', dy + 'px');
 
-    const duration = 2 + Math.random() * 3; // 2〜5秒
-    p.style.animationDuration = duration + 's';
+    // ランダム速度
+    p.style.animationDuration = (2 + Math.random() * 3) + 's';
 
     container.appendChild(p);
   }
