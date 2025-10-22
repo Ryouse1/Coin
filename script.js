@@ -11,14 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function setupGame(){
   const diff = document.getElementById('difficulty').value;
-  let slotCount;
-  if(diff==='easy') slotCount = 2;
-  else if(diff==='normal') slotCount = 3;
-  else slotCount = 4;
+  let slotCount = diff==='easy'?2: diff==='normal'?3:4;
 
-  // 先に答えを決める（枠の合計）
-  targets = Array(slotCount).fill(0);
-  const coinCount = slotCount*2 + Math.floor(Math.random()*3); 
+  // 答えを先に作る
+  const coinCount = slotCount*2 + Math.floor(Math.random()*3);
   stack = [];
   let totalCoins = 0;
   for(let i=0;i<coinCount;i++){
@@ -27,12 +23,13 @@ function setupGame(){
     totalCoins += val;
   }
 
-  // 枠ごとの正解をランダムに分ける
+  // 枠ごとの正解をランダムに分配
+  targets = Array(slotCount).fill(0);
   let remaining = totalCoins;
   for(let i=0;i<slotCount-1;i++){
     const val = Math.floor(Math.random()*(remaining-(slotCount-i-1)))+1;
-    targets[i]=val;
-    remaining-=val;
+    targets[i] = val;
+    remaining -= val;
   }
   targets[slotCount-1] = remaining;
   targets.sort(()=>Math.random()-0.5);
@@ -63,19 +60,11 @@ function render(){
     slot.dataset.target = t;
 
     slot.addEventListener('dragover', e=>e.preventDefault());
-    slot.addEventListener('dragenter', e=>{
-      e.preventDefault();
-      slot.style.backgroundColor='rgba(173,216,230,0.5)';
-    });
-    slot.addEventListener('dragleave', e=>{
-      slot.style.backgroundColor='rgba(255,255,255,0.7)';
-    });
     slot.addEventListener('drop', e=>{
       e.preventDefault();
       const coinId = e.dataTransfer.getData('text/plain');
       const coin = document.getElementById(coinId);
       slot.appendChild(coin);
-      slot.style.backgroundColor='rgba(255,255,255,0.7)';
       checkSlots();
     });
 
@@ -90,11 +79,21 @@ function checkSlots(){
     if(sum===parseInt(slot.dataset.target)) slot.classList.add('correct');
     else { slot.classList.remove('correct'); allCorrect=false; }
   });
-  if(allCorrect) setTimeout(()=>alert('クリア！🎉'),100);
+
+  if(allCorrect){
+    setTimeout(()=>{
+      alert('クリア！🎉');
+      document.getElementById('game-screen').style.display='none';
+      document.getElementById('title-screen').style.display='flex';
+      document.getElementById('coins').innerHTML='';
+      document.getElementById('slots').innerHTML='';
+    },100);
+  }
 }
 
 function setupParticles(num){
   const container=document.getElementById('particles');
+  container.innerHTML='';
   for(let i=0;i<num;i++){
     const p=document.createElement('div');
     p.style.position='absolute';
