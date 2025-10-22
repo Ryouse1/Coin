@@ -16,16 +16,11 @@ function setupGame(){
   else if(diff==='normal') slotCount = 3;
   else slotCount = 4;
 
-  // まず答え（枠の合計）を生成
-  targets = [];
-  for(let i=0;i<slotCount;i++){
-    targets.push(0); // 初期値0、後でコイン分配で決める
-  }
-
-  // コインの合計を決める
-  let totalCoins = 0;
-  const coinCount = slotCount*2 + Math.floor(Math.random()*3); // 適当にコイン数
+  // 先に答えを決める（枠の合計）
+  targets = Array(slotCount).fill(0);
+  const coinCount = slotCount*2 + Math.floor(Math.random()*3); 
   stack = [];
+  let totalCoins = 0;
   for(let i=0;i<coinCount;i++){
     const val = Math.floor(Math.random()*5)+1;
     stack.push(val);
@@ -36,11 +31,10 @@ function setupGame(){
   let remaining = totalCoins;
   for(let i=0;i<slotCount-1;i++){
     const val = Math.floor(Math.random()*(remaining-(slotCount-i-1)))+1;
-    targets[i] = val;
-    remaining -= val;
+    targets[i]=val;
+    remaining-=val;
   }
   targets[slotCount-1] = remaining;
-  // シャッフル
   targets.sort(()=>Math.random()-0.5);
 
   render();
@@ -66,7 +60,7 @@ function render(){
   targets.forEach((t,i)=>{
     const slot=document.createElement('div');
     slot.className='slot';
-    slot.dataset.target=t;
+    slot.dataset.target = t;
 
     slot.addEventListener('dragover', e=>e.preventDefault());
     slot.addEventListener('dragenter', e=>{
